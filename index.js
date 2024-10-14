@@ -1,34 +1,55 @@
-let now = new Date();
-let days = [
-  "Sunday",
-  "Monday",
-  "Tuesday",
-  "Wednesday",
-  "Thursday",
-  "Friday",
-  "Saturday",
-];
-let day = days[now.getDay()];
-let hours = now.getHours();
-let minutes = now.getMinutes().toString().padStart(2, "0");
-
-function formatDate() {
-  return `${day} ${hours}:${minutes}`;
-}
-console.log(formatDate());
-
-let date = document.querySelector("#today-date");
-date.innerHTML = formatDate();
-
-function currentCity(event) {
+function search(event) {
   event.preventDefault();
-  let inputValue = inputSearch.value;
-  city.innerHTML = inputValue;
+  let searchInputElement = document.querySelector("#search-input");
+  let cityElement = document.querySelector("#current-city");
+  cityElement.innerHTML = searchInputElement.value;
+  console.log(searchInputElement.value);
+  let apiKey = "2008d7d14b59443btfdod2382a33e32f";
+  let apiUrl = `https://api.shecodes.io/weather/v1/current?query=${searchInputElement.value}&key=${apiKey}&units=metric`;
+
+  axios.get(apiUrl).then(displayTemperature);
 }
-let inputSearch = document.querySelector(".search-input");
-inputSearch.addEventListener("submit", currentCity);
 
-let city = document.querySelector(".current-city");
+function formatDate(date) {
+  let minutes = date.getMinutes();
+  let hours = date.getHours();
+  let day = date.getDay();
 
-let searchButton = document.querySelector(".search-button");
-searchButton.addEventListener("click", currentCity);
+  if (minutes < 10) {
+    minutes = `0${minutes}`;
+  }
+
+  if (hours < 10) {
+    hours = `0${hours}`;
+  }
+
+  let days = [
+    "Sunday",
+    "Monday",
+    "Tuesday",
+    "Wednesday",
+    "Thursday",
+    "Friday",
+    "Saturday",
+  ];
+
+  let formattedDay = days[day];
+  return `${formattedDay} ${hours}:${minutes}`;
+}
+
+let searchForm = document.querySelector("#search-form");
+searchForm.addEventListener("submit", search);
+
+let currentDateELement = document.querySelector("#current-date");
+let currentDate = new Date();
+
+currentDateELement.innerHTML = formatDate(currentDate);
+
+function displayTemperature(response) {
+  console.log("test");
+  console.log(response);
+  let temperature = Math.round(response.data.temperature.current);
+
+  let temperatureElement = document.querySelector("#current-temperature-value");
+  temperatureElement.innerHTML = temperature;
+}
